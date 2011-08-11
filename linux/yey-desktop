@@ -1,0 +1,61 @@
+#!/usr/bin/env ruby
+
+# setting
+browser_cmd = 'firefox'
+clipboard_cmd = 'xclip'
+proxy_addr = nil
+proxy_port = nil
+
+require 'net/http'
+
+
+# capture png file
+tmpfile = "/tmp/image_upload#{$$}.png"
+imagefile = ARGV[0]
+
+if imagefile && File.exist?(imagefile) then
+  system "convert #{imagefile} #{tmpfile}"
+else
+  system "import #{tmpfile}"
+end
+
+if !File.exist?(tmpfile) then
+  exit
+end
+
+imagedata = File.read(tmpfile)
+File.delete(tmpfile)
+
+# upload
+boundary = '----BOUNDARYBOUNDARY----'
+
+HOST = 'yey.nu'
+CGI = '/test.php'
+UA   = 'Yey-Desktop/1.0'
+
+data = <<EOF
+--#{boundary}\r
+content-disposition: form-data; name="imagedata"; filename="filedata"\r
+\r
+#{imagedata}\r
+--#{boundary}--\r
+EOF
+
+header ={
+  'Content-Length' => data.length.to_s,
+  'Content-type' => "multipart/form-data; boundary=#{boundary}",
+  'User-Agent' => UA
+}
+
+Net::HTTP::Proxy(proxy_addr, proxy_port).start(HOST,80) {|http|
+  res = http.post(CGI,data,header)
+  url = res.response.to_ary[1]
+  puts url
+  if system "which #{clipboard_cmd} >/dev/null 2>&1" then
+    system "echo -n #{url} | #{clipboard_cmd}"
+  end
+  system "#{browser_cmd} #{url}"
+
+
+}
+
