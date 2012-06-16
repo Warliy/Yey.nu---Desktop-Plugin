@@ -1,0 +1,64 @@
+#!/usr/bin/env ruby
+
+require 'net/http'
+
+# get id
+user = IO.popen("whoami", "r+").gets.chomp
+program = ARGV[0].to_s
+
+
+
+# capture png file
+tmpfile = "/tmp/image_upload#{$$}.png"
+imagefile = ARGV[1]
+
+if imagefile && File.exist?(imagefile) then
+  system "sips -s format png \"#{imagefile}\" --out \"#{tmpfile}\""
+else
+  system "screencapture -i \"#{tmpfile}\""
+  if File.exist?(tmpfile) then
+    system "sips -d profile --deleteColorManagementProperties \"#{tmpfile}\""  
+  end
+end
+
+if !File.exist?(tmpfile) then
+  exit
+end
+
+imagedata = File.read(tmpfile)
+File.delete(tmpfile)
+
+# upload
+boundary = '----BOUNDARYBOUNDARY----'
+
+HOST = 'yey.nu'
+CGI = '/desktop.php'
+UA   = 'Yey-Desktop/1.0'
+
+data = <<EOF
+--#{boundary}\r
+content-disposition: form-data; name="id"\r
+\r
+#{id}\r
+--#{boundary}\r
+content-disposition: form-data; name="imagedata"; filename="yey.png"\r
+\r
+#{imagedata}\r
+--#{boundary}--\r
+EOF
+
+header ={
+  'Content-Length' => data.length.to_s,
+  'Content-type' => "multipart/form-data; boundary=#{boundary}",
+  'User-Agent' => UA
+}
+
+Net::HTTP.start(HOST,80){|http|
+  res = http.post(CGI,data,header)
+  url = res.response.body
+  IO.popen("pbcopy","r+"){|io|
+    io.write url
+    io.close
+  }
+  system "open #{url}"
+}
