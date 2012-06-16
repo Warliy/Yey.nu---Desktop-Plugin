@@ -4,6 +4,23 @@
 // Pretty much only edited the where it post
 #include "stdafx.h"
 #include "yeywin.h"
+#include <windows.h>
+#include "stdlib.h"
+#include <stdio.h>
+#include <string.h>
+#define __T(x)      L ## x
+#include <Shellapi.h>
+#include <iostream>
+#using <mscorlib.dll>
+#include <vcclr.h>
+
+using namespace System;
+using namespace System::IO;
+
+#define DebugMessage(str)	OutputDebugString(str)
+#undef GetCurrentDirectory
+
+ using namespace std;   
 
 // グローバル変数:
 HINSTANCE hInst;							// 現在のインターフェイス
@@ -30,6 +47,29 @@ BOOL				convertPNG(LPCTSTR destFile, LPCTSTR srcFile);
 BOOL				savePNG(LPCTSTR fileName, HBITMAP newBMP);
 BOOL				uploadFile(HWND hwnd, LPCTSTR fileName);
 BOOL				saveId(const WCHAR* str);
+
+
+bool To_CharStar( String^ source, char*& target )
+{
+    pin_ptr<const wchar_t> wch = PtrToStringChars( source );
+    int len = (( source->Length+1) * 2);
+    target = new char[ len ];
+    return wcstombs( target, wch, len ) != -1;
+}
+
+
+bool To_string( String^ source, string &target )
+{
+    pin_ptr<const wchar_t> wch = PtrToStringChars( source );
+    int len = (( source->Length+1) * 2);
+    char *ch = new char[ len ];
+    bool result = wcstombs( ch, wch, len ) != -1;
+    target = ch;
+    delete ch;
+    return result;
+}
+
+
 
 // エントリーポイント
 int APIENTRY _tWinMain(HINSTANCE hInstance,
@@ -848,11 +888,40 @@ BOOL uploadFile(HWND hwnd, LPCTSTR fileName)
 			result += '\0';
 
 			// クリップボードに URL をコピー
-			setClipBoardText(result.c_str());
-			
+		//	setClipBoardText(result.c_str());
+			// (Directory::GetCurrentDirectory(),
 			// URL を起動
-			execUrl(result.c_str()); 
+		//	MessageBox(hwnd, , szTitle, MB_ICONINFORMATION | MB_OK);
+		//	execUrl(result.c_str());
+		string str;
+		//To_string(Directory::GetCurrentDirectory(),str);
+	//	str.append(result.c_str(),str);
+		str ="yey-browser.exe";
+		//str += result.c_str();
+		string str2;
+		str2 = " ";
+		str2 = result.c_str();
+		std::wstring widestr = std::wstring(str.begin(), str.end());
+		std::wstring widestr2 = std::wstring(str2.begin(), str2.end());
 
+		const wchar_t* majs = (const wchar_t*)(widestr.c_str());
+		const wchar_t* linksis = (const wchar_t*)(widestr2.c_str());	
+	//	const wchar_t* majs = (const wchar_t*)(_T("yey-browser.exe "),result.c_str());
+		//	 majs =+ (const wchar_t*)(result.c_str());
+//	MessageBox(hwnd, majs,	szTitle, MB_ICONERROR | MB_OK);
+		// (const wchar_t*)(_T("yey-browser.exe ")+result.c_str());	
+		//ShellExecute(NULL, _T("open"), majs, NULL, NULL, SW_SHOWNORMAL);
+		ShellExecute(
+		NULL,
+		_T("open"),                     
+		majs,
+		linksis, // params                            
+		NULL, 
+		SW_SHOW);
+
+		//  	ShellExecute(GetDesktopWindow(), _T("open"), majs, NULL, NULL, SW_SHOWNORMAL);
+
+		//system(majs);
 			return TRUE;
 		}
 	} else {
