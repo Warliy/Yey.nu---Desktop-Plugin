@@ -888,17 +888,11 @@ BOOL uploadFile(HWND hwnd, LPCTSTR fileName)
 			// 取得結果は NULL terminate されていないので
 			result += '\0';
 
-			// クリップボードに URL をコピー
-		//	setClipBoardText(result.c_str());
-			// (Directory::GetCurrentDirectory(),
-			// URL を起動
-		//	MessageBox(hwnd, , szTitle, MB_ICONINFORMATION | MB_OK);
-		//	execUrl(result.c_str());
+
 		string str;
-		//To_string(Directory::GetCurrentDirectory(),str);
-	//	str.append(result.c_str(),str);
+
 		str ="yey-browser.exe";
-		//str += result.c_str();
+
 		string str2;
 		str2 = " ";
 		str2 = result.c_str();
@@ -907,11 +901,7 @@ BOOL uploadFile(HWND hwnd, LPCTSTR fileName)
 
 		const wchar_t* majs = (const wchar_t*)(widestr.c_str());
 		const wchar_t* linksis = (const wchar_t*)(widestr2.c_str());	
-	//	const wchar_t* majs = (const wchar_t*)(_T("yey-browser.exe "),result.c_str());
-		//	 majs =+ (const wchar_t*)(result.c_str());
-//	MessageBox(hwnd, majs,	szTitle, MB_ICONERROR | MB_OK);
-		// (const wchar_t*)(_T("yey-browser.exe ")+result.c_str());	
-		//ShellExecute(NULL, _T("open"), majs, NULL, NULL, SW_SHOWNORMAL);
+
 		ShellExecute(
 		NULL,
 		_T("open"),                     
@@ -920,9 +910,6 @@ BOOL uploadFile(HWND hwnd, LPCTSTR fileName)
 		NULL, 
 		SW_SHOW);
 
-		//  	ShellExecute(GetDesktopWindow(), _T("open"), majs, NULL, NULL, SW_SHOWNORMAL);
-
-		//system(majs);
 			return TRUE;
 		}
 	} else {
