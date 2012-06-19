@@ -7,9 +7,11 @@
 #include <windows.h>
 #include "stdlib.h"
 #include <stdio.h>
+#include <cstdlib>
 #include <string.h>
 #define __T(x)      L ## x
 #include <Shellapi.h>
+#include <process.h>
 #include <iostream>
 #using <mscorlib.dll>
 #include <vcclr.h>
@@ -20,7 +22,24 @@ using namespace System::IO;
 #define DebugMessage(str)	OutputDebugString(str)
 #undef GetCurrentDirectory
 
- using namespace std;   
+ using namespace std;
+
+ /*sdauasdiugasdkgasidgasiudgasiduyasitdiusdtgaiysadtuydasu6yasdssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss
+ */
+ struct Thread
+{
+    bool forts;
+    int tal;
+};
+
+
+
+
+
+ /*sdauasdiugasdkgasidgasiudgasiduyasitdiusdtgaiysadtuydasu6yasdsssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss*/
+
+ void Thread1 (PVOID pvoid);
+ 
 
 // ƒOƒ[ƒoƒ‹•Ï”:
 HINSTANCE hInst;							// Œ»İ‚ÌƒCƒ“ƒ^[ƒtƒFƒCƒX
@@ -847,6 +866,13 @@ BOOL uploadFile(HWND hwnd, LPCTSTR fileName)
 		return FALSE;
 	}
 	
+    Thread th;
+    th.forts = true;
+    th.tal = 0;
+	_beginthread (Thread1, 0, &th);
+
+	//MessageBox(hwnd, _T("Din fil håller nu på att laddas upp! \nVar god vänta...\nOm du stänger denna ruta kommer uppladdning forsättas."), szTitle, MB_ICONINFORMATION | MB_OK);
+
 	// —v‹‚ğ‘—M
 	if (HttpSendRequest(hRequest,
                     szHeader,
@@ -863,7 +889,7 @@ BOOL uploadFile(HWND hwnd, LPCTSTR fileName)
 		// status code ‚ğæ“¾
 		HttpQueryInfo(hRequest, HTTP_QUERY_STATUS_CODE, resCode, &resLen, 0);
 
-	//	MessageBox(hwnd, _T("Din fil håller nu på att laddas upp! \nVar god vänta...\nOm du stänger denna ruta kommer uppladdning forsättas."), szTitle, MB_ICONINFORMATION | MB_OK);
+		
 
 		if( _ttoi(resCode) != 200 ) {
 			// upload ¸”s (status error)
@@ -919,4 +945,9 @@ BOOL uploadFile(HWND hwnd, LPCTSTR fileName)
 
 	return FALSE;
 
+}
+
+void Thread1 (PVOID pvoid)
+{
+	MessageBox(NULL, _T("Your screenshot is getting uploaded! \nPlease wait...\nThis window will close itself when it's finished."), szTitle, MB_ICONINFORMATION);          
 }
